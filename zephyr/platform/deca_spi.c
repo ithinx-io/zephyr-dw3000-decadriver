@@ -4,10 +4,10 @@
  * Copyright 2021 (c) Callender-Consulting LLC.
  */
 
-#include <device.h>
-#include <drivers/spi.h>
-#include <logging/log.h>
-#include <zephyr.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/spi.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/zephyr.h>
 
 #include "deca_device_api.h"
 
@@ -21,7 +21,7 @@ LOG_MODULE_REGISTER(dw3000_spi);
 #define DW_SPI	DT_PARENT(DT_INST(0, decawave_dw3000))
 
 static const struct device* spi;
-static struct spi_cs_control* cs_ctrl = SPI_CS_CONTROL_PTR_DT(DW_INST, 0);
+static struct spi_cs_control cs_ctrl = SPI_CS_CONTROL_INIT(DT_NODELABEL(DW3000), 0);
 static struct spi_config spi_cfgs[2] = {0}; // configs for slow and fast
 static struct spi_config* spi_cfg;
 
@@ -38,12 +38,12 @@ int dw3000_spi_init(void)
 
 	spi_cfg = &spi_cfgs[0];
 
-	spi = device_get_binding(DT_LABEL(DW_SPI));
+	spi = DEVICE_DT_GET(DW_SPI);
 	if (!spi) {
 		LOG_ERR("DW3000 SPI binding failed");
 		return -1;
 	} else {
-		LOG_INF("DW3000 on %s", DT_LABEL(DW_SPI));
+		LOG_INF("DW3000 on %s",DT_PROP(DW_INST, label));
 	}
 
 	return 0;

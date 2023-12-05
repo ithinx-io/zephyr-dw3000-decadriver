@@ -1,7 +1,7 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/zephyr.h>
+#include <zephyr/kernel.h>
 
 #include "deca_device_api.h"
 #include "dw3000.h"
@@ -82,10 +82,11 @@ int dw3000_init_interrupt(void)
 
 	/* Interrupt */
 	if (conf.gpio_irq.port) {
+		//conf.gpio_irq.pin = 34;
 		gpio_pin_configure_dt(&conf.gpio_irq, GPIO_INPUT);
 		gpio_init_callback(&gpio_cb, dw3000_isr, BIT(conf.gpio_irq.pin));
 		gpio_add_callback(conf.gpio_irq.port, &gpio_cb);
-		gpio_pin_interrupt_configure_dt(&conf.gpio_irq, GPIO_INT_EDGE_RISING);
+		gpio_pin_interrupt_configure_dt(&conf.gpio_irq, GPIO_INT_EDGE_BOTH);
 
 		LOG_INF("IRQ on %s pin %d", conf.gpio_irq.port->name,
 				conf.gpio_irq.pin);
